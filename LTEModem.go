@@ -538,6 +538,7 @@ func (device_param_tests param_test_modem)AT_ConfigSMS()([]string,error){
 	//AT+CMGF=1
 	//AT+CSCS="GSM"
 	//AT+CSCB=1
+	//AT+CPMS="MT"		config memory sms to sim
 	cmd:="+CMGF=1"
 	//device_param_tests.AT_ReqAns(cmd,500)
 	str,_:=device_param_tests.AT_ReqAns(cmd,500)
@@ -548,6 +549,8 @@ func (device_param_tests param_test_modem)AT_ConfigSMS()([]string,error){
 	//fmt.Println("11111111111111")
 	//fmt.Println(str)
 	cmd="+CSCB=1"
+	str,_=device_param_tests.AT_ReqAns(cmd,500)
+	cmd="+CPMS=\"MT\""
 	str,_=device_param_tests.AT_ReqAns(cmd,500)
 	//fmt.Println("11111111111111")
 	//fmt.Println(str)
