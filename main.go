@@ -8,14 +8,21 @@ import (
 	"log"
 	"io/ioutil"
 	"encoding/json"
+	"strconv"
 )
 
 /*
+compiller for DragonBoard
 
+set GOARCH=arm64
+set GOOS=linux
+go build -o execsms
+
+compiller for Raspberry
 
 set GOARCH=arm
 set GOOS=linux
-go build -o smsservice
+go build -o execsms
 
 
 sudo wvdial -C /home/rxhf/risinghf/me909/dial.conf
@@ -165,8 +172,9 @@ func main() {
 			fmt.Println(log_str)
 
 			serv_sett:=strings.Split(strings.TrimSpace(strings.TrimPrefix(s[6],"SET SERVER:"))," ")
-
-			ChangeServer("as",2)
+			fmt.Println(serv_sett)
+			serv_num,_:=strconv.Atoi(strings.TrimSpace(serv_sett[1]))
+			ChangeServer(strings.TrimSpace(serv_sett[0]),serv_num)
 		}
 		//fmt.Println(LTEModem.AT_DelSMS(i))
 	}
