@@ -1,0 +1,9 @@
+{
+  "FtpServer":"127.0.0.1",
+  "FtpUser":"user",
+  "FtpPass":"pass",
+  "WiFiSSID":"SSID",
+  "WiFiPASS":"password",
+  "ModemPort":"/dev/ttyUSB2",
+  "AddrConfig":"local_conf.json"
+}

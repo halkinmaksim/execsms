@@ -50,6 +50,9 @@ IMEI: 867377020177147
 +GCAP: +CGSM,+DS,+ES
 
 
+
+/opt/risinghf/pktfwd
+
 */
 
 
@@ -77,6 +80,29 @@ var c_str_FAIL = fmt.Sprintf("%sFAIL%s",CLR_R,CLR_N)
 var c_str_WARNING = fmt.Sprintf("%sWARNING%s",CLR_Y,CLR_N)
 
 
+type prog_settings struct {
+	FtpServer 			string
+	FtpUser				string
+	FtpPass				string
+	WiFiSSID			string
+	WiFiPASS			string
+	ModemPort			string
+	AddrConfig			string
+}
+func(pr_set *prog_settings)LoadFromFile(fileName string)bool{
+	rawDataIn, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		return false
+		log.Fatal("Cannot load settings:", err)
+	}
+	err = json.Unmarshal(rawDataIn, &pr_set)
+	if err != nil {
+		return false
+		log.Fatal("Invalid settings format:", err)
+	}
+	return true
+}
+
 /*
 RESET LTE
 REBOOT GATEWAY
@@ -100,6 +126,11 @@ sudo nano local_conf.json
 func main() {
 	//fmt.Println("dd")
 	fmt.Println("Service SMS command")
+	var prog_sett prog_settings
+
+
+
+
 	//create file for log
 	f, err := os.OpenFile("/tmp/smsservice.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
@@ -111,7 +142,12 @@ func main() {
 	log.SetOutput(f)
 	log.Println("\n\tStart Application")
 
-	LTEModem:=param_test_modem{"LTE","/dev/ttyUSB2","","","","","","",""}
+	//	Load program settings
+	if prog_sett.LoadFromFile("programsettings.json")!=true{
+		fmt.Println("Can't load programm settings from file programsettings.json")
+	}
+
+	LTEModem:=param_test_modem{"LTE",prog_sett.ModemPort,"","","","","","",""}
 	var s []string
 
 
