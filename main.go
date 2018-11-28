@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"strconv"
+	"os/exec"
+	"path/filepath"
 )
 
 /*
@@ -127,6 +129,10 @@ func main() {
 	//fmt.Println("dd")
 	fmt.Println("Service SMS command")
 	var prog_sett prog_settings
+	fn,_:= os.Executable()
+	exPath := filepath.Dir(fn)
+	exPath = exPath+"/programsettings.json"
+	//fmt.Println(exPath)
 
 
 
@@ -142,8 +148,9 @@ func main() {
 	log.SetOutput(f)
 	log.Println("\n\tStart Application")
 
+
 	//	Load program settings
-	if prog_sett.LoadFromFile("programsettings.json")!=true{
+	if prog_sett.LoadFromFile(exPath)!=true{
 		fmt.Println("Can't load programm settings from file programsettings.json")
 	}
 
@@ -184,36 +191,51 @@ func main() {
 
 	*/
 	//return
+	const LINUX_REBOOT_MAGIC1 uintptr = 0xfee1dead
+	const LINUX_REBOOT_MAGIC2 uintptr = 672274793
+	const LINUX_REBOOT_CMD_RESTART uintptr = 0x1234567
+
 	fmt.Println(LTEModem.AT_GetCSQ())
 	fmt.Println(LTEModem.AT_ConfigSMS())
-	for i:=1;i<11;i++{
-		s,_=LTEModem.AT_ReadSMS(i)
-		fmt.Println("Text SMS - ",s[6])
-		if(strings.HasPrefix(s[6],"RESET LTE")){
-			fmt.Println("RESET LTE")
-			log_str:=fmt.Sprintf("\tReceived SMS %s, from num: %s",s[6],s[2])
-			log.Println(log_str)
-			fmt.Println(log_str)
-		}
-		if(strings.HasPrefix(s[6],"REBOOT GATEWAY")){
-			fmt.Println("REBOOT GATEWAY")
-			log_str:=fmt.Sprintf("\tReceived SMS %s, from num: %s",s[6],s[2])
-			log.Println(log_str)
-			fmt.Println(log_str)
-		}
-		if(strings.HasPrefix(s[6],"SET SERVER:")){
-			fmt.Println("SET SERVER:")
-			log_str:=fmt.Sprintf("\tReceived SMS %s, from num: %s",s[6],s[2])
-			log.Println(log_str)
-			fmt.Println(log_str)
 
-			serv_sett:=strings.Split(strings.TrimSpace(strings.TrimPrefix(s[6],"SET SERVER:"))," ")
-			fmt.Println(serv_sett)
-			serv_num,_:=strconv.Atoi(strings.TrimSpace(serv_sett[1]))
-			ChangeServer(strings.TrimSpace(serv_sett[0]),serv_num)
+		for i:=1;i<11;i++{
+			s,_=LTEModem.AT_ReadSMS(i)
+			fmt.Println("Text SMS - ",s[6])
+			if(strings.HasPrefix(s[6],"REBOOT GATEWAY")){
+				fmt.Println("REBOOT GATEWAY")
+				log_str:=fmt.Sprintf("\tReceived SMS %s, from num: %s",s[6],s[2])
+				log.Println(log_str)
+				fmt.Println(log_str)
+				LTEModem.AT_DelSMS(i)
+				cmdec := exec.Command("/sbin/reboot")
+				cmdec.Run()
+
+			}
+			if(strings.HasPrefix(s[6],"RESET LTE")){
+				fmt.Println("RESET LTE")
+				log_str:=fmt.Sprintf("\tReceived SMS %s, from num: %s",s[6],s[2])
+				log.Println(log_str)
+				fmt.Println(log_str)
+				cmdec := exec.Command("systemctl","restart","lte")
+				cmdec.Run()
+			}
+			if(strings.HasPrefix(s[6],"SET SERVER:")){
+				fmt.Println("SET SERVER:")
+				log_str:=fmt.Sprintf("\tReceived SMS %s, from num: %s",s[6],s[2])
+				log.Println(log_str)
+				fmt.Println(log_str)
+
+				serv_sett:=strings.Split(strings.TrimSpace(strings.TrimPrefix(s[6],"SET SERVER:"))," ")
+				fmt.Println(serv_sett)
+				serv_num,_:=strconv.Atoi(strings.TrimSpace(serv_sett[1]))
+				//prog_sett.AddrConfig
+				ChangeServer(prog_sett.AddrConfig,strings.TrimSpace(serv_sett[0]),serv_num)
+			}
+			LTEModem.AT_DelSMS(i)
 		}
-		//fmt.Println(LTEModem.AT_DelSMS(i))
-	}
+		//time.Sleep(time.Second*20)
+
+
 /*
 	fmt.Println(LTEModem.AT_ReadSMS(2))
 	fmt.Println("-------------------------")
@@ -227,9 +249,9 @@ func main() {
 
 }
 
-func ChangeServer(serv_addr string,serv_port int)  {
+func ChangeServer( configfile string,serv_addr string,serv_port int)  {
 	config_json := map[string]interface{}{}
-	rawDataIn, err := ioutil.ReadFile("local_conf.json")
+	rawDataIn, err := ioutil.ReadFile(configfile)
 	if err != nil {
 		log.Println("Cannot load settings:", err)
 	}
