@@ -27,8 +27,8 @@ REBOOT GATEWAY  reboot system
     reboot
 SET SERVER: address port - set server address and port
 
-
-    crontab -e
+    sudo chmod +x execsms
+    sudo crontab -e
     */1 * * * * /home/rxhf/execsms >> /tmp/sms.log 2>&1
     */1 * * * * /home/rxhf/execsms
 
