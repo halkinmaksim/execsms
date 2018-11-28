@@ -1,7 +1,7 @@
 # execsms
 exec commands from SMS
 
-To compile the file under the Raspberra system, set the environment variables.
+To compile the file under the Raspberry system, set the environment variables.
 
     set GOARCH = arm
     set GOOS = linux
@@ -26,5 +26,10 @@ REBOOT GATEWAY  reboot system
     
     reboot
 SET SERVER: address port - set server address and port
+
+
+    crontab -e
+    */1 * * * * /home/rxhf/execsms >> /tmp/sms.log 2>&1
+    */1 * * * * /home/rxhf/execsms
 
 
