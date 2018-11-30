@@ -5,5 +5,5 @@
   "WiFiSSID":"SSID",
   "WiFiPASS":"password",
   "ModemPort":"/dev/ttyUSB2",
-  "AddrConfig":"local_conf.json"
+  "AddrConfig":"/opt/risinghf/pktfwd/local_conf.json"
 }

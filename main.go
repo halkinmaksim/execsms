@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"os/exec"
 	"path/filepath"
+	"time"
 )
 
 /*
@@ -218,6 +219,7 @@ func main() {
 				fmt.Println(log_str)
 				cmdec := exec.Command("systemctl","restart","lte")
 				cmdec.Run()
+				time.Sleep(time.Second*2)
 			}
 			if(strings.HasPrefix(s[6],"SET SERVER:")){
 				fmt.Println("SET SERVER:")
@@ -230,6 +232,9 @@ func main() {
 				serv_num,_:=strconv.Atoi(strings.TrimSpace(serv_sett[1]))
 				//prog_sett.AddrConfig
 				ChangeServer(prog_sett.AddrConfig,strings.TrimSpace(serv_sett[0]),serv_num)
+				cmdec := exec.Command("systemctl","restart","pktfwd")
+				cmdec.Run()
+				time.Sleep(time.Second*2)
 			}
 			LTEModem.AT_DelSMS(i)
 		}
@@ -269,9 +274,9 @@ func ChangeServer( configfile string,serv_addr string,serv_port int)  {
 	if err != nil {
 		log.Println("JSON marshaling failed:", err)
 	}
-	err = ioutil.WriteFile("local_conf.json", rawDataOut, 0)
+	err = ioutil.WriteFile(configfile, rawDataOut, 0)
 	if err != nil {
-		log.Fatal("Cannot write updated settings file:", err)
+		log.Println("Cannot write updated settings file:", err)
 	}
 	log.Println(config_json)
 }

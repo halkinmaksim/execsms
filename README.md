@@ -33,3 +33,10 @@ SET SERVER: address port - set server address and port
     */1 * * * * /home/rxhf/execsms
 
 
+sudo chmod +x execsms
+sudo crontab -e
+
+
+ tail -f /tmp/smsservice.log
+ 
+sudo nano /opt/risinghf/pktfwd/local_conf.json
