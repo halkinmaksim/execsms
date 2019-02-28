@@ -17,33 +17,45 @@ and run
 
     go build -o execsms
 
-copy findeth.sh to /home/rxhf
-copy execsms to /home/rxhf
+
+copy findeth.sh to /home/rxhf and execsms to /home/rxhf
+
+After then, use the command
+
+    sudo chmod +x /home/rxhf/execsms
     
-The application supports the following commands:
-
-RESET LTE - reboot lte from cmd 
-
-    systemctl restart lte
-REBOOT GATEWAY  reboot system
+Add program to crontab - for this, use the command
     
-    reboot
-SET SERVER: address port - set server address and port
-
-    sudo chmod +x execsms
     sudo crontab -e
+and add task
+    
     */1 * * * * /home/rxhf/execsms >> /tmp/sms.log 2>&1
     */1 * * * * /home/rxhf/execsms
     */1 * * * * /home/rxhf/findeth.sh
 
 
-sudo chmod +x execsms
-sudo crontab -e
 
+The application supports the following commands:
 
- tail -f /tmp/smsservice.log
+RESET LTE - reboot lte from cmd 
+
+This analogue command
+
+    systemctl restart lte
+REBOOT GATEWAY  reboot system
+
+This analogue command
+
+    reboot
+SET SERVER: address port - set server address and port
+
+To view the event log, run the command
+
+    tail -f /tmp/smsservice.log
  
-sudo nano /opt/risinghf/pktfwd/local_conf.json
+ To view server settings, run the command
+ 
+    sudo nano /opt/risinghf/pktfwd/local_conf.json
 
 
 help for cmd on lte
