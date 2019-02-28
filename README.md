@@ -18,7 +18,9 @@ and run
     go build -o execsms
 
 
-copy findeth.sh to /home/rxhf and execsms to /home/rxhf
+copy findeth.sh to /home/rxhf 
+
+copy execsms and programsettings.json to /home/rxhf
 
 After then, use the command
 
